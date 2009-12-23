@@ -46,7 +46,7 @@ def print_help()
 
 	puts "Possible commands:\n"
 	puts $commands
-	puts "Flags:\n-r: Rebases the current git repository before doing anything elsen\n-d: Specifies a directory you want to check for externals, which avoids calling git svn show-externals which can be slow.\n-c: Clones any externals that it can't find."
+	puts "\nFlags:\n-r: Rebases the current git repository before doing anything else\n-d: Specifies a directory you want to check for externals, which avoids calling git svn show-externals which can be slow.\n-c: Clones any externals that it can't find."
 
 end
 
