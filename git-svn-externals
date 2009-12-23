@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+#TODO: Check that we are at the root of a git repo
+#TODO: -c Flag to clone missing repositories.
+
 require 'fileutils'
 include FileUtils
 
@@ -44,6 +47,7 @@ def print_help()
 
 	puts "Possible commands:\n"
 	puts $commands
+	puts "Flags:\n-r: Rebases the current git repository before doing anything elsen\n-d: Specifies a directory you want to check for externals, which avoids calling git svn show-externals which can be slow.\n-c: Clones any externals that it can't find."
 
 end
 
@@ -146,6 +150,10 @@ if (!$commands.include?(command))
 
 end
 
+if (ARGV.include?("-r"))
+	`git svn rebase`
+end
+
 specified_dir = nil
 
 if (ARGV.include?("-d"))
@@ -174,7 +182,7 @@ end
 
 puts "Found external definitions…\n"
 
-filter_externals!	(externals)
+filter_externals!(externals)
 
 case command
 	
