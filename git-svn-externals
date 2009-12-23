@@ -111,6 +111,8 @@ def clone(externals)
 		`git svn clone #{external[:remote_url]} #{external[:local_path]}`
 	
 	end
+	
+	#TODO: ignore the cloned files
 
 end
 
