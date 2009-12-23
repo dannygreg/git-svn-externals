@@ -9,13 +9,13 @@ $commands = ["up", "update", "status", "dcommit"]
 
 def externals_from_string(externals_string)
 
-	#TODO: Make externals hashes for local_path, remote_url
 	external_entries = externals_string.split("\n")
 	
 	paths = Array.new
 	external_entries.each do |external|
 	
-		paths.push(external.split(" ")[0])
+		split_external = external.split(" ")
+		paths.push({:local_path => split_external[0], :remote_url => split_external[1]})
 	
 	end	
 	
@@ -53,9 +53,9 @@ def update(externals)
 
 	externals.each do |external|
 	
-		Dir.chdir(external) do 
+		Dir.chdir(external[:local_path]) do 
 		
-			puts ">>>>>>>>>>>>>>> #{external} <<<<<<<<<<<<<<<"
+			puts ">>>>>>>>>>>>>>> #{external[:local_path]} <<<<<<<<<<<<<<<"
 			puts `git svn rebase`
 			puts "\n"
 		
@@ -67,8 +67,9 @@ end
 
 def status(externals)
 
-	externals.each do |path| 
+	externals.each do |external| 
 		#strip leading slash to ensure relative paths - this would lead to issues with externals at the root
+		path = external[:local_path]
 		if (path.start_with?("/"))
 			path = path[1..path.length-1]
 		end
@@ -87,11 +88,11 @@ end
 
 def dcommit(externals)
 
-	externals.each do |path|
+	externals.each do |external|
 	
-		Dir.chdir(path) do
+		Dir.chdir(external[:local_path]) do
 			
-			puts ">>>>>>>>>>>>>>> #{path} <<<<<<<<<<<<<<<"
+			puts ">>>>>>>>>>>>>>> #{external[:local_path]} <<<<<<<<<<<<<<<"
 			puts `git svn dcommit`
 			puts "\n"
 			
