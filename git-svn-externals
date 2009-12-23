@@ -187,7 +187,9 @@ end
 
 puts "Found external definitions…\n"
 
-filter_externals!(externals)
+if (command != "clone")
+	filter_externals!(externals)
+end
 
 case command
 	
