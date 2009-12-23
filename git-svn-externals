@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 #TODO: Check that we are at the root of a git repo
-#TODO: -c Flag to clone missing repositories.
 
 require 'fileutils'
 include FileUtils
@@ -120,18 +119,24 @@ end
 
 def filter_externals!(externals)
 	# Checks to see if the externals exist, if not it puts what hasn't been cloned and removes it from the array. 
+	externals_to_clone = []
 	externals.each do |external|
 		
 		path = external[:local_path]
 		if (!File.exists?(path))
-			
-			puts "#{path} does not exist, it probably hasn't been cloned yet, skipping for now…"
-			externals.delete(external)
-			
+			if (ARGV.include?("-c"))
+				externals_to_clone.push(external)
+			else
+				puts "#{path} does not exist, it probably hasn't been cloned yet, skipping for now…"
+				externals.delete(external)
+			end
 		end
 		
 	end
 	
+	if (externals_to_clone.count != 0)
+		clone(externals_to_clone)
+	end
 
 end
 
