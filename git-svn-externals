@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-# TODO: Add checking to see if the externals have been cloned
-
 require 'fileutils'
 include FileUtils
 
@@ -116,6 +114,23 @@ def clone(externals)
 
 end
 
+def filter_externals!(externals)
+	# Checks to see if the externals exist, if not it puts what hasn't been cloned and removes it from the array. 
+	externals.each do |external|
+		
+		path = external[:local_path]
+		if (!File.exists?(path))
+			
+			puts "#{path} does not exist, it probably hasn't been cloned yet, skipping for now…"
+			externals.delete(external)
+			
+		end
+		
+	end
+	
+
+end
+
 if (ARGV.count == 0)
 
 	print_help
@@ -158,6 +173,8 @@ if (externals == nil || externals.count == 0)
 end
 
 puts "Found external definitions…\n"
+
+filter_externals!	(externals)
 
 case command
 	
