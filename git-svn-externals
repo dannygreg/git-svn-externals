@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
-# TODO: Add a -d flag to specify a directory, so we don't have to use git svn show-externals and use propget instead
+# TODO: Add checking to see if the externals have been cloned
 
 require 'fileutils'
 include FileUtils
 
-$commands = ["up", "update", "status", "dcommit",]
+$commands = ["up", "update", "status", "dcommit", "clone"]
 
 def externals_from_string(externals_string)
 
@@ -107,6 +107,7 @@ def clone(externals)
 	externals.each do |external|
 	
 		puts "Cloning #{external[:remote_url]}…"
+		#TODO: have this output its progress
 		`git svn clone #{external[:remote_url]} #{external[:local_path]}`
 	
 	end
@@ -166,4 +167,6 @@ case command
 		status(externals)
 	when "dcommit"
 		dcommit(externals)
+	when "clone"
+		clone(externals)
 end
