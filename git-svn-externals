@@ -5,7 +5,7 @@
 require 'fileutils'
 include FileUtils
 
-$commands = ["up", "update", "status", "dcommit"]
+$commands = ["up", "update", "status", "dcommit",]
 
 def externals_from_string(externals_string)
 
@@ -97,6 +97,17 @@ def dcommit(externals)
 			puts "\n"
 			
 		end
+	
+	end
+
+end
+
+def clone(externals)
+
+	externals.each do |external|
+	
+		puts "Cloning #{external[:remote_url]}…"
+		`git svn clone #{external[:remote_url]} #{external[:local_path]}`
 	
 	end
 
