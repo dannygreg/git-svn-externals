@@ -1,0 +1,157 @@
+#!/usr/bin/env ruby
+
+# TODO: Add a -d flag to specify a directory, so we don't have to use git svn show-externals and use propget instead
+
+require 'fileutils'
+include FileUtils
+
+$commands = ["up", "update", "status", "dcommit"]
+
+def externals_from_string(externals_string)
+
+	external_entries = externals_string.split("\n")
+	
+	paths = Array.new
+	external_entries.each do |external|
+	
+		paths.push(external.split(" ")[0])
+	
+	end	
+	
+	paths
+
+end
+
+def externals_in_repo()
+	
+	puts "Calling show-externals, this can take a long time on repositories with lots of directories.\nTo speed this up use the -d flag and specify a directory where you know externals are.\n"
+	externals_string = `git svn show-externals|grep -vE '#|^$'`
+	externals_from_string(externals_string)
+
+end
+
+def externals_in_dir(path)
+
+	puts "Calling propget on #{path}…\n"
+	
+	externals_string = Dir.chdir(path) do
+		`git svn propget svn:externals`
+	end
+	
+	externals_from_string(externals_string)	
+end
+
+def print_help()
+
+	puts "Possible commands:\n"
+	puts $commands
+
+end
+
+def update(externals)
+
+	externals.each do |external|
+	
+		Dir.chdir(external) do 
+		
+			puts ">>>>>>>>>>>>>>> #{external} <<<<<<<<<<<<<<<"
+			puts `git svn rebase`
+			puts "\n"
+		
+		end
+	
+	end
+
+end
+
+def status(externals)
+
+	externals.each do |path| 
+		#strip leading slash to ensure relative paths - this would lead to issues with externals at the root
+		if (path.start_with?("/"))
+			path = path[1..path.length-1]
+		end
+	
+		Dir.chdir(path) do
+		
+			puts ">>>>>>>>>>>>>>> #{path} <<<<<<<<<<<<<<<"
+			puts `git status`
+			puts "\n"
+	
+		end
+	
+	end
+
+end
+
+def dcommit(externals)
+
+	externals.each do |path|
+	
+		Dir.chdir(path) do
+			
+			puts ">>>>>>>>>>>>>>> #{path} <<<<<<<<<<<<<<<"
+			puts `git svn dcommit`
+			puts "\n"
+			
+		end
+	
+	end
+
+end
+
+if (ARGV.count == 0)
+
+	print_help
+	exit 0
+	
+end
+
+#TODO: Make a nicer, array based, routing system
+command = ARGV[0]
+if (!$commands.include?(command))
+
+	puts "Unrecognised command #{command}. Run without any flags or commands to see help."
+	exit 0
+
+end
+
+specified_dir = nil
+
+if (ARGV.include?("-d"))
+
+	directory_var_index = ARGV.index("-d") + 1
+	dir = ARGV.fetch(directory_var_index, nil)
+	if (dir == nil)
+		puts "No directory supplied."
+		exit 0
+	end
+	
+	specified_dir = dir
+	
+end
+
+externals = specified_dir == nil ? externals_in_repo : externals_in_dir(specified_dir)
+
+if specified_dir != nil 
+	Dir.chdir(specified_dir)
+end
+
+if (externals == nil || externals.count == 0)
+	puts "No externals found in repository or given directory"
+	exit 0
+end
+
+puts "Found external definitions…\n"
+
+case command
+	
+	when "up"
+		update(externals)
+	when "update"
+		update(externals)
+	when "status"
+		status(externals)
+	when "dcommit"
+		dcommit(externals)
+end
