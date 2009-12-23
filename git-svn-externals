@@ -9,6 +9,7 @@ $commands = ["up", "update", "status", "dcommit"]
 
 def externals_from_string(externals_string)
 
+	#TODO: Make externals hashes for local_path, remote_url
 	external_entries = externals_string.split("\n")
 	
 	paths = Array.new
@@ -107,7 +108,6 @@ if (ARGV.count == 0)
 	
 end
 
-#TODO: Make a nicer, array based, routing system
 command = ARGV[0]
 if (!$commands.include?(command))
 
