@@ -132,6 +132,11 @@ def clone(externals)
 		if (Dir.pwd != $repository_path)
 			ignore_string = Dir.pwd + "/" + external[:local_path]
 			ignore_string.gsub!($repository_path, "")
+			
+			#Strip a leading / if it exists
+			if (ignore_string[0,1] == "/")
+				ignore_string[0] = ""
+			end
 		else
 			ignore_string = external[:local_path]
 		end
