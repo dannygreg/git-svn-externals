@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 #TODO: Check that we are at the root of a git repo
+#TODO: Split this out to multiple files
 
 require 'fileutils'
 include FileUtils
@@ -115,7 +116,9 @@ def ignore_path(path)
 
 	Dir.chdir($repository_path) do 
 		exclude_file = File.new(".git/info/exclude", "a+")
-		exclude_file.puts("#{path}")
+		if (!FileReader.read_file(exclude_file).include?(path))
+			exclude_file.puts("#{path}")
+		end
 	end
 	
 end
@@ -141,7 +144,6 @@ def clone(externals)
 			ignore_string = external[:local_path]
 		end
 		
-		#TODO: Check to see if the ignore is already in there
 		puts "Ignoring #{ignore_string} from external: #{external[:local_path]}"
 		ignore_path(ignore_string)
 	
