@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 #TODO: Split this out to multiple files
+#TODO: Check that supplied dirs exist.
 
 require 'fileutils'
 require File.dirname(__FILE__) + '/lib/file_reader'
@@ -117,7 +118,8 @@ def ignore_path(path)
 
 	Dir.chdir($repository_path) do 
 		exclude_file = File.new(".git/info/exclude", "a+")
-		if (!FileReader.read_file(exclude_file).include?(path))
+		exclude_file_at_start = File.new(".git/info/exclude", "r")
+		if (!FileReader.read_file(exclude_file_at_start).include?(path))
 			exclude_file.puts("#{path}")
 		end
 	end
