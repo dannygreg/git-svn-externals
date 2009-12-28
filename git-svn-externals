@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 
-#TODO: Check that we are at the root of a git repo
 #TODO: Split this out to multiple files
 
 require 'fileutils'
+require File.dirname(__FILE__) + '/lib/file_reader'
+
 include FileUtils
 
 $commands = ["up", "update", "status", "dcommit", "clone"]

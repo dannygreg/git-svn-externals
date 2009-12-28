@@ -5,7 +5,7 @@ include FileUtils
 
 class FileReader
 
-	def FileReader.read_file(File file) 
+	def FileReader.read_file(file) 
 		return_string = String.new
 		while (!file.eof?) do
 			return_string += file.read(32)
