@@ -6,6 +6,14 @@ require 'fileutils'
 include FileUtils
 
 $commands = ["up", "update", "status", "dcommit", "clone"]
+$repository_path = Dir.pwd
+
+if (!File.exists?(".git"))
+
+	puts "Not at the root of a git repository, please run from the top level of the repository."
+	exit 0
+
+end
 
 def externals_from_string(externals_string)
 
@@ -103,6 +111,15 @@ def dcommit(externals)
 
 end
 
+def ignore_path(path)
+
+	Dir.chdir($repository_path) do 
+		exclude_file = File.new(".git/info/exclude", "a+")
+		exclude_file.puts("#{path}")
+	end
+	
+end
+
 def clone(externals)
 
 	externals.each do |external|
@@ -110,10 +127,20 @@ def clone(externals)
 		puts "Cloning #{external[:remote_url]}…"
 		#TODO: have this output its progress
 		`git svn clone #{external[:remote_url]} #{external[:local_path]}`
+		
+		ignore_string = nil
+		if (Dir.pwd != $repository_path)
+			ignore_string = Dir.pwd + external[:local_path]
+			ignore_string.gsub!($repository_path, "")
+		else
+			ignore_string = external[:local_path]
+		end
+		
+		#TODO: Check to see if the ignore is already in there
+		puts "Ignoring #{ignore_string} from external: #{external[:local_path]}"
+		ignore_path(ignore_string)
 	
 	end
-	
-	#TODO: ignore the cloned files
 
 end
 
