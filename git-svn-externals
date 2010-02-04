@@ -4,7 +4,6 @@
 #TODO: Check that supplied dirs exist.
 
 require 'fileutils'
-require File.dirname(__FILE__) + '/lib/file_reader'
 
 include FileUtils
 
@@ -119,7 +118,7 @@ def ignore_path(path)
 	Dir.chdir($repository_path) do 
 		exclude_file = File.new(".git/info/exclude", "a+")
 		exclude_file_at_start = File.new(".git/info/exclude", "r")
-		if (!FileReader.read_file(exclude_file_at_start).include?(path))
+		if (!exclude_file_at_start.read.include?(path))
 			exclude_file.puts("#{path}")
 		end
 	end
