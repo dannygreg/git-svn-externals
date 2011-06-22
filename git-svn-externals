@@ -25,8 +25,16 @@ def externals_from_string(externals_string)
 	external_entries.each do |external|
 	
 		split_external = external.split(" ")
-		paths.push({:local_path => split_external[0], :remote_url => split_external[1]})
-	
+
+    revision = nil
+    if split_external.length == 3 and split_external[1].start_with?("-r")
+      revision = split_external[1]
+      remote_url = split_external[2]
+    else
+      remote_url = split_external[1]
+    end
+    
+		paths.push({:local_path => split_external[0], :remote_url => remote_url, :revision => revision})
 	end	
 	
 	paths
@@ -128,11 +136,17 @@ end
 def clone(externals)
 
 	externals.each do |external|
-	
-		puts "Cloning #{external[:remote_url]}…"
-		#TODO: have this output its progress
-		`git svn clone #{external[:remote_url]} #{external[:local_path]}`
-		
+
+
+    if external[:revision].nil?
+      puts "Cloning #{external[:remote_url]}…"
+      #TODO: have this output its progress
+      `git svn clone #{external[:remote_url]} #{external[:local_path]}`
+		else
+      puts "Cloning #{external[:remote_url]} #{external[:revision]}…"
+      `git svn clone #{external[:revision]} #{external[:remote_url]} #{external[:local_path]}`
+    end
+      
 		ignore_string = nil
 		if (Dir.pwd != $repository_path)
 			ignore_string = Dir.pwd + "/" + external[:local_path]
